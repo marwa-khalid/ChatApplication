@@ -42,30 +42,30 @@ const ChatArea = ({ selectedUser }) => {
               </Box>
             </Flex>
           ))}
+          <Flex mt={"550px"} flexDirection="column" justifyContent="flex-end">
+            <Flex alignItems="center">
+              <Input
+                padding={3}
+                focusBorderColor="#886cdb"
+                flex="1"
+                variant="filled"
+                placeholder="Type your message..."
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                mr={2}
+              />
+              <IconButton
+                colorScheme="purple"
+                bg="#886cdb"
+                aria-label="Send"
+                icon={<FaPaperPlane />}
+                onClick={handleMessageSend}
+              />
+            </Flex>
+          </Flex>
         </>
       )}
       {/* Message send input */}
-      <Flex mt={"550px"} flexDirection="column" justifyContent="flex-end">
-        <Flex alignItems="center">
-          <Input
-            padding={3}
-            focusBorderColor="#886cdb"
-            flex="1"
-            variant="filled"
-            placeholder="Type your message..."
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
-            mr={2}
-          />
-          <IconButton
-            colorScheme="purple"
-            bg="#886cdb"
-            aria-label="Send"
-            icon={<FaPaperPlane />}
-            onClick={handleMessageSend}
-          />
-        </Flex>
-      </Flex>
     </Box>
   );
 };
