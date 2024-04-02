@@ -8,26 +8,53 @@ import {
   Text,
   Avatar,
 } from "@chakra-ui/react";
-
+import axios from "axios";
+import { useRouter } from "next/router";
 const Login = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
-  const [name, setName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const router = useRouter();
 
   const toggleForm = () => {
     setIsLoginForm(!isLoginForm);
   };
 
   const handleLogin = () => {
-    // Handle login logic here
-    console.log("Logging in:", { username, password });
+    const body = {
+      password: password,
+      userName: username,
+    };
+    axios
+      .post(`http://localhost:5000/api/users/login`, body)
+      .then((response) => {
+        console.log(response.data.user);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        router.push("/chatui");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleRegister = () => {
-    // Handle registration logic here
-    console.log("Registering:", { name, email, username, password });
+    const body = {
+      email: email,
+      password: password,
+      fullName: fullName,
+      userName: username,
+    };
+    axios
+      .post(`http://localhost:5000/api/users/register`, body)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -78,8 +105,8 @@ const Login = () => {
           <Flex flexDirection={"column"}>
             <Input
               placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               mb={4}
             />
             <Input
