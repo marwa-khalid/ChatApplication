@@ -100,11 +100,16 @@ router.get("/specific", async (req, res) => {
 
 router.get("/search", async (req, res) => {
   try {
-    const { query } = req.query;
-
-    // Find users whose name matches the query (case-insensitive)
-    const users = await User.find({
+    const { query, loggedInUserId } = req.query;
+    console.log(loggedInUserId);
+    // Fetch all users whose name matches the query (case-insensitive)
+    const allUsers = await User.find({
       fullName: { $regex: new RegExp(query, "i") },
+    });
+
+    // Filter out the logged-in user from the search results
+    const users = allUsers.filter((user) => {
+      return user.id !== loggedInUserId;
     });
 
     res.json(users);
@@ -113,4 +118,5 @@ router.get("/search", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 module.exports = router;

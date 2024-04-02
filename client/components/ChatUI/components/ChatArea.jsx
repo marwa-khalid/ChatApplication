@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Flex, Avatar, Text, Input, IconButton } from "@chakra-ui/react";
 import { FaPaperPlane } from "react-icons/fa";
 import axios from "axios";
@@ -9,6 +9,7 @@ const ChatArea = ({ selectedUser, setRefresh, refresh }) => {
     typeof window !== "undefined" &&
     JSON.parse(window.localStorage.getItem("user"));
   const [chatHistory, setChatHistory] = useState([]);
+  const chatContainerRef = useRef(null); // Ref for chat container
 
   useEffect(() => {
     fetchChatHistory();
@@ -19,10 +20,17 @@ const ChatArea = ({ selectedUser, setRefresh, refresh }) => {
     // Cleanup function to clear interval when component unmounts
     return () => clearInterval(interval);
   }, [selectedUser]);
+  const scrollToBottom = () => {
+    chatContainerRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom(); // Scroll to bottom whenever chat history updates
+  }, [chatHistory]);
+
   console.log(selectedUser);
   const fetchChatHistory = async () => {
     const senderId = loggedInUser.id;
-    const receiverId = selectedUser?.id;
+    const receiverId = selectedUser.id;
 
     await axios
       .get(
@@ -58,15 +66,17 @@ const ChatArea = ({ selectedUser, setRefresh, refresh }) => {
     }
   };
 
+  const formatTime = (timestamp) => {
+    const messageTime = new Date(timestamp);
+    let hours = messageTime.getHours();
+    const minutes = messageTime.getMinutes().toString().padStart(2, "0");
+    const amOrPm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${amOrPm}`;
+  };
+
   return (
-    <Box
-      position="relative"
-      height={"100vh"}
-      bg="#f0f0f0"
-      p={4}
-      w="75%"
-      overflowY="auto"
-    >
+    <Box position="relative" height={"100vh"} bg="#f0f0f0" p={4} w="75%">
       {selectedUser && (
         <>
           <Flex shadow={"xl"} justifyContent="center" padding={1} mb={4}>
@@ -81,24 +91,35 @@ const ChatArea = ({ selectedUser, setRefresh, refresh }) => {
               {selectedUser.fullName}
             </Text>
           </Flex>
-          {chatHistory.messages?.map((message, index) => (
-            <Flex
-              key={index}
-              mb={4}
-              alignItems="center"
-              justifyContent={
-                message.sender === loggedInUser.id ? "flex-end" : "flex-start"
-              }
-            >
-              <Box
-                padding={3}
-                borderRadius="50"
-                bg={message.sender === loggedInUser.id ? "#886cdb" : "grey"}
+          <Box
+            maxHeight="calc(100vh - 200px)" // Adjust the height as per your requirement
+            overflowY="auto" // Enable vertical scrolling
+          >
+            {chatHistory.messages?.map((message, index) => (
+              <Flex
+                key={index}
+                mb={4}
+                alignItems="center"
+                justifyContent={
+                  message.sender === loggedInUser.id ? "flex-end" : "flex-start"
+                }
               >
-                <Text color={"white"}>{message.content}</Text>
-              </Box>
-            </Flex>
-          ))}
+                <Box
+                  padding={3}
+                  borderRadius="10"
+                  bg={message.sender === loggedInUser.id ? "#886cdb" : "grey"}
+                >
+                  <Text color="white">
+                    {message.content}{" "}
+                    <Text fontSize={10} color="white">
+                      {formatTime(message.timestamp)}
+                    </Text>
+                  </Text>
+                </Box>
+              </Flex>
+            ))}
+            <div ref={chatContainerRef} /> {/* Empty div for scrolling */}
+          </Box>
 
           <Flex
             flexDirection="column"

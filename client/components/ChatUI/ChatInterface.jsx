@@ -41,9 +41,10 @@ const ChatInterface = () => {
   const handleSearch = async (searchQuery) => {
     try {
       console.log(searchQuery);
+      const loggedInUserId = loggedInUser.id;
       if (searchQuery) {
         const response = await axios.get(
-          `http://localhost:5000/api/users/search?query=${searchQuery}`
+          `http://localhost:5000/api/users/search?query=${searchQuery}&loggedInUserId=${loggedInUserId}`
         );
         setSearchResults(response.data);
       } else {
@@ -60,10 +61,14 @@ const ChatInterface = () => {
         recentUsers={recentUsers}
         onUserSelect={handleUserSelect}
         onSearch={handleSearch}
-        activeUserId={selectedUser?._id}
+        activeUserId={selectedUser._id}
         searchResults={searchResults}
       />
-      <ChatArea selectedUser={selectedUser} refresh={refresh} setRefresh={setRefresh} />
+      <ChatArea
+        selectedUser={selectedUser}
+        refresh={refresh}
+        setRefresh={setRefresh}
+      />
     </Flex>
   );
 };

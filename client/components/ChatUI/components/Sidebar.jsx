@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Input, Text, useColorMode } from "@chakra-ui/react";
+import { Box, Input, Flex, Text, useColorMode } from "@chakra-ui/react";
 
 const Sidebar = ({
   recentUsers,
@@ -11,6 +11,14 @@ const Sidebar = ({
   console.log(recentUsers);
   console.log(activeUserId);
   const { colorMode } = useColorMode();
+  const formatTime = (timestamp) => {
+    const messageTime = new Date(timestamp);
+    let hours = messageTime.getHours();
+    const minutes = messageTime.getMinutes().toString().padStart(2, "0");
+    const amOrPm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${amOrPm}`;
+  };
 
   return (
     <Box
@@ -52,11 +60,18 @@ const Sidebar = ({
               color={activeUserId === user._id ? "white" : "grey"}
               fontSize="sm"
             >
-              {user.responses?.length > 0
-                ? user.responses[user.responses.length - 1]
-                : user.latestMessage?.content
-                ? user.latestMessage.content
-                : "No messages"}
+              <Flex alignItems="center">
+                {user.responses?.length > 0
+                  ? user.responses[user.responses.length - 1]
+                  : user.latestMessage?.content
+                  ? user.latestMessage.content
+                  : null}
+                <Text color="white" ml="auto">
+                  {user.responses
+                    ? null
+                    : formatTime(user.latestMessage?.timestamp)}
+                </Text>
+              </Flex>
             </Text>
           </Box>
         )
