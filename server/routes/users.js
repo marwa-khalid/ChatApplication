@@ -52,32 +52,34 @@ router.get("/all", async (req, res) => {
 
 router.get("/specific", async (req, res) => {
   try {
-    // Assuming you have some way to retrieve the logged-in user's ID
-    const { loggedInUserId } = req.query; // Adjust this according to your authentication setup
+    const { loggedInUserId } = req.query;
 
     // Find chats where the logged-in user is a participant
-    const chats = await Chat.find({ participants: loggedInUserId }).populate(
-      "participants",
-      "fullName"
-    ); // Populate participant details
+    const chats = await Chat.find({ participants: loggedInUserId });
 
     // Prepare the result array
     const result = [];
 
     // Iterate through each chat
     for (const chat of chats) {
-      // Find the participants (excluding the logged-in user)
-      const otherParticipant = chat.participants.find(
-        (participant) => participant._id !== loggedInUserId
+      // Find the other participant (excluding the logged-in user)
+      const otherParticipantId = chat.participants.find(
+        (participant) => participant.toString() !== loggedInUserId
       );
 
       // Get the latest message
       const latestMessage = chat.messages[chat.messages.length - 1];
 
+      // Retrieve the full name of the other participant
+      const otherParticipant = await User.findById(
+        otherParticipantId,
+        "fullName"
+      );
+
       // Construct the chat object with required data
       const chatData = {
-        _id: chat._id,
-        fullName: otherParticipant.fullName, // Assuming fullName is the name field you want
+        id: otherParticipantId,
+        fullName: otherParticipant.fullName,
         latestMessage: {
           sender: latestMessage.sender,
           content: latestMessage.content,

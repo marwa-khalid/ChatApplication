@@ -36,20 +36,20 @@ const Sidebar = ({
             onClick={() => onUserSelect(user)}
             cursor="pointer"
             mb={2}
-            bg={activeUserId === user.id ? "#886cdb" : "transparent"}
-            color={activeUserId === user.id ? "white" : "black"}
+            bg={activeUserId === user._id ? "#886cdb" : "transparent"}
+            color={activeUserId === user._id ? "white" : "black"}
             borderRadius="md"
             p={2}
-            _hover={{
-              bg: activeUserId !== user.id ? "#e5e5e5" : "#886cdb",
-              color: activeUserId !== user.id ? "black" : "white",
-            }}
+            // _hover={{
+            //   bg: activeUserId !== user.id ? "#e5e5e5" : "#886cdb",
+            //   color: activeUserId !== user.id ? "black" : "white",
+            // }}
           >
-            <Text fontWeight={activeUserId === user.id ? "bold" : "normal"}>
+            <Text fontWeight={activeUserId === user._id ? "bold" : "normal"}>
               {user.fullName}
             </Text>
             <Text
-              color={activeUserId === user.id ? "white" : "grey"}
+              color={activeUserId === user._id ? "white" : "grey"}
               fontSize="sm"
             >
               {user.responses?.length > 0

@@ -8,7 +8,7 @@ router.post("/", async (req, res) => {
   try {
     // Find the chat document based on participants
     let chat = await Chat.findOne({
-      participants: { $all: [senderId, receiverId] },
+      participants: { $all: [receiverId, senderId] },
     });
 
     if (!chat) {
@@ -35,17 +35,18 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { senderId, receiverId } = req.query;
-    console.log(senderId);
-    console.log(receiverId);
 
-    let chat = await Chat.findOne({
-      participants: { $all: [senderId, receiverId] },
+    // Find the chat document based on participants
+    const chat = await Chat.findOne({
+      participants: { $all: [receiverId, senderId] },
     });
+
     if (!chat) {
       return res
         .status(404)
         .json({ success: false, message: "Chat not found" });
     }
+
     return res.status(200).json({ success: true, chat });
   } catch (error) {
     console.error(error);

@@ -3,7 +3,7 @@ import { Box, Flex, Avatar, Text, Input, IconButton } from "@chakra-ui/react";
 import { FaPaperPlane } from "react-icons/fa";
 import axios from "axios";
 
-const ChatArea = ({ selectedUser }) => {
+const ChatArea = ({ selectedUser, setRefresh, refresh }) => {
   const [messageText, setMessageText] = useState("");
   const loggedInUser =
     typeof window !== "undefined" &&
@@ -12,11 +12,17 @@ const ChatArea = ({ selectedUser }) => {
 
   useEffect(() => {
     fetchChatHistory();
-  }, [selectedUser]);
 
+    // Polling interval: fetch messages every 5 seconds
+    const interval = setInterval(fetchChatHistory, 5000);
+
+    // Cleanup function to clear interval when component unmounts
+    return () => clearInterval(interval);
+  }, [selectedUser]);
+  console.log(selectedUser);
   const fetchChatHistory = async () => {
     const senderId = loggedInUser.id;
-    const receiverId = selectedUser._id;
+    const receiverId = selectedUser?.id;
 
     await axios
       .get(
@@ -26,6 +32,7 @@ const ChatArea = ({ selectedUser }) => {
         console.log(response.data);
 
         setChatHistory(response.data.chat);
+        setRefresh(!refresh);
       })
       .catch((error) => {
         console.error("Error fetching recent chats:", error);
@@ -38,7 +45,7 @@ const ChatArea = ({ selectedUser }) => {
       // Make a POST request to send the message
       await axios.post("http://localhost:5000/api/chats", {
         senderId: loggedInUser.id, // Assuming senderId is required in your backend
-        receiverId: selectedUser._id, // Assuming receiverId is required in your backend
+        receiverId: selectedUser.id, // Assuming receiverId is required in your backend
         content: messageText,
       });
       fetchChatHistory();

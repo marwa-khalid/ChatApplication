@@ -10,7 +10,7 @@ const ChatInterface = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
-
+  const [refresh, setRefresh] = useState(false);
   useEffect(() => {
     const fetchRecentUsers = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
@@ -32,7 +32,7 @@ const ChatInterface = () => {
     };
 
     fetchRecentUsers();
-  }, []);
+  }, [refresh]);
 
   const handleUserSelect = (user) => {
     setSelectedUser(user);
@@ -60,10 +60,10 @@ const ChatInterface = () => {
         recentUsers={recentUsers}
         onUserSelect={handleUserSelect}
         onSearch={handleSearch}
-        activeUserId={selectedUser?.id}
+        activeUserId={selectedUser?._id}
         searchResults={searchResults}
       />
-      <ChatArea selectedUser={selectedUser} />
+      <ChatArea selectedUser={selectedUser} refresh={refresh} setRefresh={setRefresh} />
     </Flex>
   );
 };
