@@ -61,7 +61,7 @@ const ChatInterface = () => {
         recentUsers={recentUsers}
         onUserSelect={handleUserSelect}
         onSearch={handleSearch}
-        activeUserId={selectedUser._id}
+        activeUserId={selectedUser?._id}
         searchResults={searchResults}
       />
       <ChatArea
